@@ -1,10 +1,15 @@
 <?php
 
-function insert($data){
+if (userLogin()['level'] != 1) {
+    header("location:" . $main_url . "error-page.php");
+    exit();
+}
+
+function insert($data)
+{
     global $koneksi;
 
-    $username   = strtolower(mysqli_real_escape_string($koneksi, $data
-    ['username']));
+    $username   = strtolower(mysqli_real_escape_string($koneksi, $data['username']));
     $fullname   = mysqli_real_escape_string($koneksi, $data['fullname']);
     $password   = mysqli_real_escape_string($koneksi, $data['password']);
     $password2  = mysqli_real_escape_string($koneksi, $data['password2']);
@@ -12,20 +17,19 @@ function insert($data){
     $address    = mysqli_real_escape_string($koneksi, $data['address']);
     $gambar     = mysqli_real_escape_string($koneksi, $_FILES['image']['name']);
 
-    if ($password !== $password2){
+    if ($password !== $password2) {
         echo "<script>
                 alert('Konfirmasi password tidak sesuai, user baru gagal 
                 diregistrasi !');
         </script>";
         return false;
-
     }
 
     $pass   = password_hash($password, PASSWORD_DEFAULT);
 
     $cekUsername    = mysqli_query($koneksi, "SELECT username FROM tbl_user
     WHERE username = '$username'");
-    if(mysqli_num_rows($cekUsername) > 0) {
+    if (mysqli_num_rows($cekUsername) > 0) {
         echo "<script>
                 alert('Username sudah terpakai, user baru gagal diregistrasi !');
             </script>";
@@ -34,7 +38,7 @@ function insert($data){
 
     if ($gambar != null) {
         $gambar = uploadimg();
-    }else {
+    } else {
         $gambar = 'default.png';
     }
 
@@ -43,17 +47,15 @@ function insert($data){
         return false;
     }
 
-    $sqlUser    = "INSERT INTO tbl_user VALUE (null, '$username', 
-    '$fullname', '$pass', '$address', '$level', '$gambar')";
+    $sqlUser    = "INSERT INTO tbl_user VALUE (null, '$username', '$fullname', '$pass', '$address', '$level', '$gambar')";
     mysqli_query($koneksi, $sqlUser);
 
     return mysqli_affected_rows($koneksi);
-
-
 }
 
 
-function delete($id, $foto){
+function delete($id, $foto)
+{
     global $koneksi;
 
     $sqlDel = "DELETE FROM tbl_user WHERE userid = $id";
@@ -65,7 +67,8 @@ function delete($id, $foto){
     return mysqli_affected_rows($koneksi);
 }
 
-function selectUser1($level){
+function selectUser1($level)
+{
     $result = null;
     if ($level == 1) {
         $result = "selected";
@@ -73,7 +76,8 @@ function selectUser1($level){
     return $result;
 }
 
-function selectUser2($level){
+function selectUser2($level)
+{
     $result = null;
     if ($level == 2) {
         $result = "selected";
@@ -81,7 +85,8 @@ function selectUser2($level){
     return $result;
 }
 
-function selectUser3($level){
+function selectUser3($level)
+{
     $result = null;
     if ($level == 3) {
         $result = "selected";
@@ -89,12 +94,12 @@ function selectUser3($level){
     return $result;
 }
 
-function update($data){
+function update($data)
+{
     global $koneksi;
 
     $iduser     = mysqli_real_escape_string($koneksi, $data['id']);
-    $username   = strtolower(mysqli_real_escape_string($koneksi, $data
-    ['username']));
+    $username   = strtolower(mysqli_real_escape_string($koneksi, $data['username']));
     $fullname   = mysqli_real_escape_string($koneksi, $data['fullname']);
     $level      = mysqli_real_escape_string($koneksi, $data['level']);
     $address    = mysqli_real_escape_string($koneksi, $data['address']);
@@ -118,7 +123,7 @@ function update($data){
                 alert('Username sudah terpakai, update data user gagal !');
                 document.location.href = 'data-user.php';
             </script>";
-        return false;
+            return false;
         }
     }
 
@@ -143,10 +148,4 @@ function update($data){
                             ");
 
     return mysqli_affected_rows($koneksi);
-
-    
-
-
 }
-
-?>
